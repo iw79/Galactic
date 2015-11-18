@@ -15,6 +15,11 @@ namespace Galactic.Exchange
         //The object representing the connection to the Exchange server.
         private ExchangeService service;
 
+        /// <summary>
+        /// Performs initial setup on ExchangeService object.
+        /// </summary>
+        /// <param name="configurationItemDirectoryPath">Path to the configuration items folder.</param>
+        /// <param name="configurationItemName">Name of the configuration item.</param>
         public Exchange(string configurationItemDirectoryPath, string configurationItemName)
         {
             if (!string.IsNullOrWhiteSpace(configurationItemDirectoryPath) && !string.IsNullOrWhiteSpace(configurationItemName))
@@ -57,6 +62,7 @@ namespace Galactic.Exchange
                 string password;
                 string domain;
 
+                //Select connection type and bind the credentials to the ExchangeService.
                 string connectionType = reader.ReadLine();
                 string address = reader.ReadLine();
                 switch (connectionType)
@@ -118,6 +124,121 @@ namespace Galactic.Exchange
                     default:
                         throw new Exception("Invalid connection type. Please check configuration file.");
                 }
+
+
+            }
+            else
+            {
+                throw new Exception("Configuration item not found.");
+            }
+        }
+
+        /// <summary>
+        /// Performs initial setup on ExchangeService object.
+        /// </summary>
+        /// <param name="exchangeVersion">The version of Exchange on the server.</param>
+        /// <param name="address">The email address of the account or EWS URL.</param>
+        /// <param name="username">Account username.</param>
+        /// <param name="password">Account password.</param>
+        /// <param name="isAutoDetect">Sets whether to autodetect url or set manually. True = Autodetect, False = Manual.</param>
+        public Exchange(string exchangeVersion, string address, string userName, string password, bool isAutoDetect)
+        {
+            if (!string.IsNullOrWhiteSpace(exchangeVersion) && !string.IsNullOrWhiteSpace(address) && !string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))
+            {
+                //Set correct version of Exchange.
+                switch (exchangeVersion)
+                {
+                    case "Exchange2007_SP1":
+                        service = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
+                        break;
+                    case "Exchange2010":
+                        service = new ExchangeService(ExchangeVersion.Exchange2010);
+                        break;
+                    case "Exchange2010_SP1":
+                        service = new ExchangeService(ExchangeVersion.Exchange2010_SP1);
+                        break;
+                    case "Exchange2010_SP2":
+                        service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
+                        break;
+                    case "Exchange2013":
+                        service = new ExchangeService(ExchangeVersion.Exchange2013);
+                        break;
+                    case "Exchange2013_SP1":
+                        service = new ExchangeService(ExchangeVersion.Exchange2013_SP1);
+                        break;
+                    default:
+                        throw new Exception("Exchange version supplied does not match any known version. Please check configuration file for errors");
+                }
+
+                if(isAutoDetect)
+                {
+                    service.Credentials = new NetworkCredential(userName, password);
+                    service.AutodiscoverUrl(address);
+                }
+                else
+                {
+                    service.Credentials = new NetworkCredential(userName, password);
+                    service.Url = new Uri(address);
+                }
+            }
+            else
+            {
+                throw new Exception("One or more arguments are incorrect.");
+            }
+        }
+
+        /// <summary>
+        /// Performs initial setup on ExchangeService object.
+        /// </summary>
+        /// <param name="exchangeVersion">The version of Exchange on the server.</param>
+        /// <param name="address">The email address of the account or EWS URL.</param>
+        /// <param name="username">Account username.</param>
+        /// <param name="password">Account password.</param>
+        /// <param name="domain">The AD domain that the accound resides on.</param>
+        /// <param name="isAutoDetect">Sets whether to autodetect url or set manually. True = Autodetect, False = Manual.</param>
+        public Exchange(string exchangeVersion, string address, string userName, string password, string domain, bool isAutoDetect)
+        {
+            if (!string.IsNullOrWhiteSpace(exchangeVersion) && !string.IsNullOrWhiteSpace(address) && !string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password) && !string.IsNullOrWhiteSpace(domain))
+            {
+                //Set correct version of Exchange.
+                switch (exchangeVersion)
+                {
+                    case "Exchange2007_SP1":
+                        service = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
+                        break;
+                    case "Exchange2010":
+                        service = new ExchangeService(ExchangeVersion.Exchange2010);
+                        break;
+                    case "Exchange2010_SP1":
+                        service = new ExchangeService(ExchangeVersion.Exchange2010_SP1);
+                        break;
+                    case "Exchange2010_SP2":
+                        service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
+                        break;
+                    case "Exchange2013":
+                        service = new ExchangeService(ExchangeVersion.Exchange2013);
+                        break;
+                    case "Exchange2013_SP1":
+                        service = new ExchangeService(ExchangeVersion.Exchange2013_SP1);
+                        break;
+                    default:
+                        throw new Exception("Exchange version supplied does not match any known version. Please check configuration file for errors");
+                }
+
+                if (isAutoDetect)
+                {
+                    service.Credentials = new NetworkCredential(userName, password, domain);
+                    service.AutodiscoverUrl(address);
+                }
+                else
+                {
+                    service.Credentials = new NetworkCredential(userName, password, domain);
+                    service.Url = new Uri(address);
+                }
+            }
+            else
+            {
+                throw new Exception("One or more arguments are incorrect.");
             }
         }
     }
