@@ -241,5 +241,11 @@ namespace Galactic.Exchange
                 throw new Exception("One or more arguments are incorrect.");
             }
         }
+
+        public GetItemResponse InboxSearch()
+        {
+
+            return null;
+        }
     }
 }
