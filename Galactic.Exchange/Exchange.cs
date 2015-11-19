@@ -242,7 +242,7 @@ namespace Galactic.Exchange
             }
         }
 
-        public GetItemResponse InboxSearch()
+        public GetItemResponse InboxSearchBySubject(string subject, int maxResults)
         {
 
             return null;
